@@ -39,7 +39,9 @@ def get_current_user(
             detail="Could not validate credentials",
         )
     
-    user = crud_user.get_user_by_email(db, email=token_data.email)
+    email = token_data.email or token_data.sub
+    user = crud_user.get_user_by_email(db, email=email)
+
     
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")

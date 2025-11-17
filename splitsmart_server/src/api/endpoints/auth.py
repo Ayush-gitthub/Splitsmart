@@ -47,8 +47,9 @@ def login_for_access_token(
         )
     
     access_token = security.create_access_token(
-        data={"sub": user.email, "email": user.email}
+        data={"sub": user.email}
     )
+
     return {
         "access_token": access_token,
         "token_type": "bearer",

@@ -7,6 +7,7 @@ import GroupDetailsScreen from '../screens/GroupDetailsScreen';
 import GroupsListScreen from '../screens/GroupsListScreen';
 import CreateGroupScreen from '../screens/CreateGroupScreen'
 import AddExpenseScreen from '../screens/AddExpenseScreen';
+import FriendsScreen from '../screens/FriendsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,7 @@ const MainAppStack = () => {
       <Stack.Screen name="CreateGroup" component={CreateGroupScreen} />
       <Stack.Screen name="GroupDetails" component={GroupDetailsScreen} />
       <Stack.Screen name="AddExpense" component={AddExpenseScreen} />
+      <Stack.Screen name="Friends" component={FriendsScreen} />
       {/* We will add these screens later */}
       {/* <Stack.Screen name="CreateGroup" component={CreateGroupScreen} /> */}
       {/* <Stack.Screen name="GroupDetails" component={GroupDetailsScreen} /> */}

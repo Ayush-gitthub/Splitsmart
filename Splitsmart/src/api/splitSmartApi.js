@@ -9,14 +9,14 @@ export const splitSmartApi = createApi({
   tagTypes: ['Groups', 'User', 'Expenses', 'GroupDetails', 'GroupBalances' , 'GroupExpenses'],
   baseQuery: fetchBaseQuery({
     baseUrl: BASE_URL,
-    prepareHeaders: async (headers, { getState }) => {
-      // Get token from AsyncStorage or Redux state
-      const token = await AsyncStorage.getItem('userToken'); // Or getState().auth.token;
+    prepareHeaders: (headers, { getState }) => {
+      const token = getState().auth.token;
       if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
+        headers.set("Authorization", `Bearer ${token}`);
       }
       return headers;
     },
+
   }),
   endpoints: (builder) => ({
     // Authentication Endpoints
@@ -96,6 +96,42 @@ export const splitSmartApi = createApi({
         { type: 'GroupExpenses', id: groupId },
       ],
     }),
+    // Send a friend request by email
+    sendFriendRequest: builder.mutation({
+      query: (body) => ({
+        url: '/friends/requests',
+        method: 'POST',
+        body, // { email: 'someone@example.com' }
+      }),
+      // no automatic invalidation (we'll refetch lists manually)
+    }),
+
+    // Get pending friend requests received by current user
+    getPendingFriendRequests: builder.query({
+      query: () => '/friends/requests/pending',
+      providesTags: (result) =>
+        result
+          ? result.map((r) => ({ type: 'User', id: r.id })) // optional
+          : [{ type: 'User', id: 'PENDING' }],
+    }),
+
+    // Accept a friend request (requester_id in URL)
+    acceptFriendRequest: builder.mutation({
+      query: (requesterId) => ({
+        url: `/friends/requests/${requesterId}/accept`,
+        method: 'POST',
+      }),
+      invalidatesTags: [{ type: 'User', id: 'PENDING' }, { type: 'User', id: 'FRIENDS' }],
+    }),
+
+    // Get the current user's friends list
+    getFriends: builder.query({
+      query: () => '/friends/',
+      providesTags: (result) =>
+        result
+          ? result.map((f) => ({ type: 'User', id: f.id }))
+          : [{ type: 'User', id: 'FRIENDS' }],
+    }),
     // ... other endpoints will go here later
   }),
 });
@@ -111,4 +147,8 @@ export const {
   useGetGroupBalancesQuery,
   useGetGroupExpensesQuery,
   useAddExpenseMutation,
+  useSendFriendRequestMutation,
+  useGetPendingFriendRequestsQuery,
+  useAcceptFriendRequestMutation,
+  useGetFriendsQuery
 } = splitSmartApi;
